@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Literal, TypedDict, cast
+from typing import Any, ClassVar, Literal, TypedDict
 from typing_extensions import Unpack
 
 import numpy as np
@@ -17,7 +17,7 @@ from recourse.defaults import (
 from recourse.helper_functions import ClassifierKwargs, parse_classifier_args
 
 pd.set_option("display.max_columns", 10)
-__all__ = ["Flipset"]
+__all__ = ["Flipset", "FlipsetItem"]
 
 
 class SortArgs(TypedDict, total=False):
@@ -68,7 +68,7 @@ class Flipset:
         self._solver = solver
 
         # attach feature vector
-        assert isinstance(x, (list, np.ndarray))
+        assert isinstance(x, list | np.ndarray)
         self._x = np.array(x, dtype=np.float_).flatten()
 
         # attach coefficients
@@ -96,9 +96,9 @@ class Flipset:
     def __repr__(self):
         s = [
             "Flipset with %d Items" % len(self),
-            "x: %r" % self._x,
-            "w: (%s)" % self._coefs,
-            "items: %r" % self._items,
+            f"x: {self._x!r}",
+            f"w: ({self._coefs})",
+            f"items: {self._items!r}",
         ]
         return "\n".join(s)
 
@@ -173,7 +173,7 @@ class Flipset:
         display_flag: bool | None = None,
     ):
         """
-        Generates a list of actions to flip the predicted value of the linear classifier from feature vector x.
+        Generate list of actions to flip the predicted value of the classifier from feature vector.
 
         :param total_items: maximum # of actions to generate
                             set as float('inf') to enumerate all possible actions
@@ -190,19 +190,20 @@ class Flipset:
 
         :param time_limit: max # of seconds to spend before stopping the solver at each iteration
 
-        :param node_limit: max # of branch and bound nodes to process before stopping the solver at each iteration
+        :param node_limit: max # of branch and bound nodes to process before stopping the solver at
+                           each iteration
 
         :param display_flag: True to display solver progress during enumeration
 
         :return:
         """
-        assert enumeration_type in self._valid_enumeration_types, (
-            "enumeration_type must be one of %r" % self._valid_enumeration_types
-        )
+        assert (
+            enumeration_type in self._valid_enumeration_types
+        ), f"enumeration_type must be one of {self._valid_enumeration_types!r}"
 
-        assert cost_type in self._valid_cost_types, (
-            "cost_type must be one of %r" % self._valid_cost_types
-        )
+        assert (
+            cost_type in self._valid_cost_types
+        ), f"cost_type must be one of {self._valid_cost_types!r}"
 
         if self._builder is None:
             self._builder = RecourseBuilder(
@@ -225,11 +226,12 @@ class Flipset:
         return self
 
     def sort(self, **kwargs: Unpack[SortArgs]) -> None:
-        """
-        Reorders the items in the Flipset dataframe
+        """Reorders the items in the Flipset dataframe
+
         Arguments used to sort are saved
-        :param sort_args: list of fields to use in sort, or arguments passed to pd.DataFrame.sort_values
-        :return:
+
+        :param sort_args: list of fields to use in sort, or arguments passed to
+            pd.DataFrame.sort_values
         """
         if len(kwargs) == 0:
             self._df.sort_values(**self._sort_args)
@@ -262,7 +264,7 @@ class Flipset:
         return self._df
 
     def to_flat_df(self):
-        """Flatten out the actionsets in the flipset to product either a latex or HTML representation."""
+        """Flatten out the actionsets in the flipset to product either a latex or HTML repr."""
         self.sort()
         tex_columns = ["features", "x", "x_new"]
         tex_df = self._df[tex_columns]
@@ -348,15 +350,15 @@ class Flipset:
         def _color_white_or_gray(row: pd.Series) -> list[str]:
             first_item = row.name if isinstance(row.name, int) else row.name[0]
             color = "white" if first_item % 2 == 1 else cfpb_color
-            res = "background-color: %s" % color
+            res = f"background-color: {color}"
             return [res] * len(row)
 
         flat_df = self.to_flat_df()
         if len(flat_df) == 0:
             style = (
-                "text-shadow: 0px 1px 1px #4d4d4d; color: 'black'; font: 30px 'LeagueGothicRegular'; background-color:"
-                + cfpb_color
-            )
+                "text-shadow: 0px 1px 1px #4d4d4d; color: 'black'; "
+                "font: 30px 'LeagueGothicRegular'; background-color:"
+            ) + cfpb_color
             ## style 1
             html = (
                 pd.DataFrame([{"outcome": "No Recourse"}])
@@ -422,7 +424,7 @@ class Flipset:
         assert isinstance(item, dict)
         required_fields = ["feasible", "actions", "cost"]
         for k in required_fields:
-            assert k in item, "item missing field %s" % k
+            assert k in item, f"item missing field {k}"
         item["actions"] = self._validate_action(item["actions"])
         assert item["cost"] > 0.0, "total cost must be positive"
         assert item["feasible"], "item must be feasible"

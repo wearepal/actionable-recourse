@@ -3,6 +3,7 @@ from typing_extensions import Unpack
 
 import numpy as np
 from numpy import typing as npt
+import seaborn as sns
 
 
 class SklearnClassifier(Protocol):
@@ -72,7 +73,7 @@ def parse_classifier_args(
             w = args[0].coef_
             t = args[0].intercept_
 
-        elif isinstance(args[0], (list, np.ndarray)):
+        elif isinstance(args[0], list | np.ndarray):
             w = np.array(args[0]).flatten()
             t = 0.0
 
@@ -90,9 +91,6 @@ def parse_classifier_args(
     return w, t
 
 
-import seaborn as sns
-
-
 # X is the data to audit on
 def print_recourse_audit_report(X, audit_df, y, group_by=["y"]):
     processed_data = (
@@ -108,7 +106,9 @@ def print_recourse_audit_report(X, audit_df, y, group_by=["y"]):
     #     (0) how many people are in the group
     #     (1) how many group members have recourse
     #     (2) what is the distribution of the cost of recourse amost those with recourse
-    #     more generally, we'll want the function to take in different ways to slice and dice the population into mutually exclusive groups, one variable that can be used to do that is just "Y", but you could also do it by Age Group, etc.
+    #     more generally, we'll want the function to take in different ways to slice and dice the
+    #     population into mutually exclusive groups, one variable that can be used to do that is
+    #     just "Y", but you could also do it by Age Group, etc.
 
     #     rows that already attain desired outcome have entries: feasible = NaN & cost = NaN
     #     rows that are certified to have no recourse have entries: feasible = False & cost = Inf`
@@ -116,14 +116,14 @@ def print_recourse_audit_report(X, audit_df, y, group_by=["y"]):
     # DELIVERABLES
 
     print("Stats: ")
-    print("Audit Dataset Size: %s" % (processed_data.shape[0]))
+    print(f"Audit Dataset Size: {processed_data.shape[0]}")
 
     def subset_data_and_plot(y, data, group_by=["y"]):
         # individuals who already have the desired outcome
-        df1 = data.loc[(data["y"] == y) & (data["feasible"].isnull()) & (data["cost"].isnull())]
+        df1 = data.loc[(data["y"] == y) & (data["feasible"].isna()) & (data["cost"].isna())]
         print(
-            "Number of datapoints that have Y=%s and already have the desired outcome: %s"
-            % (y, df1.shape[0])
+            f"Number of datapoints that have Y={y} "
+            f"and already have the desired outcome: {df1.shape[0]}"
         )
 
         # individuals who are certified to have no recourse
@@ -142,7 +142,7 @@ def print_recourse_audit_report(X, audit_df, y, group_by=["y"]):
 
         if group_by[0] == "y":
             sns.histplot(df3["cost"]).set(
-                title="Histogram of Cost of Recourse for Y=%s" % (y),
+                title=f"Histogram of Cost of Recourse for Y={y}",
                 xlabel="Cost",
                 ylabel="Counts",
             )
@@ -158,7 +158,7 @@ def print_recourse_audit_report(X, audit_df, y, group_by=["y"]):
                 color="lightskyblue",
                 inner="quartile",
             ).set(
-                title="Histogram of Cost of Recourse by %s for Y=%s" % (group_by[0], y),
+                title=f"Histogram of Cost of Recourse by {group_by[0]} for Y={y}",
                 xlabel=group_by[0],
             )
 
