@@ -7,7 +7,8 @@ from recourse.helper_functions import parse_classifier_args
 from recourse.action_set import ActionSet
 from recourse.builder import RecourseBuilder
 
-__all__ = ['RecourseAuditor']
+__all__ = ["RecourseAuditor"]
+
 
 # todo add timer / print
 class RecourseAuditor(object):
@@ -17,7 +18,6 @@ class RecourseAuditor(object):
     """
 
     _default_print_flag = True
-
 
     def __init__(self, action_set, **kwargs):
         """
@@ -39,21 +39,21 @@ class RecourseAuditor(object):
         self.action_set.set_alignment(self.coefficients)
 
         # set solver
-        self.solver = kwargs.get('solver', DEFAULT_SOLVER)
+        self.solver = kwargs.get("solver", DEFAULT_SOLVER)
 
         # setup recourse problem
-        self.builder = RecourseBuilder(coefficients = self.coefficients,
-                                       intercept = self.intercept,
-                                       action_set = self.action_set,
-                                       solver = self.solver)
+        self.builder = RecourseBuilder(
+            coefficients=self.coefficients,
+            intercept=self.intercept,
+            action_set=self.action_set,
+            solver=self.solver,
+        )
 
-        self._print_flag = kwargs.get('print_flag', self._default_print_flag)
-
+        self._print_flag = kwargs.get("print_flag", self._default_print_flag)
 
     @property
     def print_flag(self):
         return self._print_flag
-
 
     @print_flag.setter
     def print_flag(self, flag):
@@ -62,10 +62,9 @@ class RecourseAuditor(object):
         elif isinstance(flag, bool):
             self._print_flag = bool(flag)
         else:
-            raise AttributeError('print_flag must be boolean or None')
+            raise AttributeError("print_flag must be boolean or None")
 
-
-    def audit(self, X, y_desired = 1):
+    def audit(self, X, y_desired=1):
         """
         evaluate cost and feasibility of recourse for for each point in X
         that is not assigned a desired outcome
@@ -90,7 +89,7 @@ class RecourseAuditor(object):
         assert np.isfinite(X).all()
         assert float(y_desired) in {1.0, -1.0, 0.0}
 
-        U, distinct_idx = np.unique(X, axis = 0, return_inverse = True)
+        U, distinct_idx = np.unique(X, axis=0, return_inverse=True)
         scores = U.dot(self.coefficients)
         if y_desired > 0:
             audit_idx = np.less(scores, -self.intercept)
@@ -100,25 +99,26 @@ class RecourseAuditor(object):
 
         # solve recourse problem
         output = []
-        pbar = tqdm(total=len(audit_idx)) ## stop tqdm from playing badly in ipython notebook.
+        pbar = tqdm(
+            total=len(audit_idx)
+        )  ## stop tqdm from playing badly in ipython notebook.
         for idx in audit_idx:
             self.builder.x = U[idx, :]
             info = self.builder.fit()
-            info['idx'] = idx
-            output.append({k: info[k] for k in ['feasible', 'cost', 'idx']})
+            info["idx"] = idx
+            output.append({k: info[k] for k in ["feasible", "cost", "idx"]})
             pbar.update(1)
         pbar.close()
 
         # add in points that were not denied recourse
         df = pd.DataFrame(output)
-        df = df.set_index('idx')
+        df = df.set_index("idx")
 
         # include unique points that attain desired label already
         df = df.reindex(range(U.shape[0]))
 
         # include duplicates of original points
         df = df.iloc[distinct_idx]
-        df = df.reset_index(drop = True)
+        df = df.reset_index(drop=True)
         df.index = raw_index
         return df
-

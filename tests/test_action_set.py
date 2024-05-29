@@ -8,22 +8,20 @@ import numpy as np
 
 
 def test_initialization(data):
-
-    a = ActionSet(X = data['X'])
-    b = ActionSet(X = data['X'].values, names = data['X'].columns.tolist())
+    a = ActionSet(X=data["X"])
+    b = ActionSet(X=data["X"].values, names=data["X"].columns.tolist())
     assert a.name == b.name
 
 
 def test_y_desired(data):
-
     # initialization checks
-    a = ActionSet(data['X'], y_desired = 1)
+    a = ActionSet(data["X"], y_desired=1)
     assert a.y_desired == 1
 
-    a = ActionSet(data['X'], y_desired = -1)
+    a = ActionSet(data["X"], y_desired=-1)
     assert a.y_desired == -1
 
-    a = ActionSet(data['X'], y_desired = 0)
+    a = ActionSet(data["X"], y_desired=0)
     assert a.y_desired == -1
 
     # setter checks
@@ -38,8 +36,7 @@ def test_y_desired(data):
 
 
 def test_align(data, coefficients):
-
-    a = ActionSet(X = data['X'])
+    a = ActionSet(X=data["X"])
 
     # no alignment means flip direction and compatability are empty
     assert a.alignment_known == False
@@ -58,20 +55,20 @@ def test_align(data, coefficients):
     assert np.all(fd == -np.array(a.flip_direction))
 
     # flipping coefficients changes the flip direction
-    b = ActionSet(X = data['X'])
+    b = ActionSet(X=data["X"])
     b.set_alignment(-coefficients)
     assert np.all(fd == -np.array(b.flip_direction))
 
 
 def test_subset_constraints(data):
-
-    if len(data['categorical_names']) == 1:
-
-        a = ActionSet(data['X'], y_desired = 1)
+    if len(data["categorical_names"]) == 1:
+        a = ActionSet(data["X"], y_desired=1)
 
         # add constraint
         assert len(a.constraints) == 0
-        id = a.add_constraint(constraint_type = 'subset_limit', names = data['onehot_names'], lb = 1, ub = 1)
+        id = a.add_constraint(
+            constraint_type="subset_limit", names=data["onehot_names"], lb=1, ub=1
+        )
         assert len(a.constraints) == 1
 
         # remove constraint
@@ -79,11 +76,12 @@ def test_subset_constraints(data):
         assert len(a.constraints) == 0
 
         # add progressively larger constriants
-        k = len(data['onehot_names'])
+        k = len(data["onehot_names"])
         for n in range(k):
-            a.add_constraint(constraint_type = 'subset_limit', names = data['onehot_names'], lb = 0, ub = n)
+            a.add_constraint(
+                constraint_type="subset_limit", names=data["onehot_names"], lb=0, ub=n
+            )
 
         assert len(a.constraints) == k
 
     return True
-

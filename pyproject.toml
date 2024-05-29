@@ -1,0 +1,55 @@
+[project]
+name = "actionable-recourse"
+version = "1.0.1"
+description = "actionable-recourse is a python library for recourse verification and reporting."
+authors = [
+    { name = "Berk Ustun", email = "squall14414@gmail.com" },
+    { name = "Alexander Spangher", email = "alexander.spangher@gmail.com" },
+]
+dependencies = [
+    "numpy>=1.14.0",
+    "scipy>=0.19.1",
+    "scikit-learn>=0.19.1",
+    "pandas>=0.23.4",
+    "cplex>=12.8",
+    "mip==1.12.0",
+    "prettytable>=0.7.2",
+    "matplotlib>=3.0.2",
+    "seaborn>=0.9.0",
+    "traitlets>=4.3.2",
+    "IPython>=7.2.0",
+    "tqdm>=4.24.0",
+    "jinja2>=2.10.1",
+]
+readme = "README.md"
+requires-python = ">= 3.10, < 3.12"
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "pytest>=4.3.0",
+    "ruff~=0.4.6",
+    "pandas-stubs~=2.2.2.240514",
+]
+
+[tool.pyright]
+pythonVersion = "3.10"
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
+reportUnknownMemberType = "none"
+reportUnknownParameterType = "none"
+reportUnknownVariableType = "none"
+reportUnknownArgumentType = "none"
+reportMissingTypeArgument = "none"
+ignore = ["examples/**", "tests/**"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/actionable_recourse"]
