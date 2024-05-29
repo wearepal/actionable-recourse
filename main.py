@@ -45,8 +45,8 @@ i = np.flatnonzero(yhat <= 0).astype(int)[0]
 # build a flipset for one individual
 fs = rs.Flipset(x=X.values[i], action_set=A, clf=clf)
 fs.populate(enumeration_type="distinct_subsets", total_items=10)
-fs.to_latex()
-fs.to_html()
+print(fs.to_latex())
+print(fs.to_html())
 
 # # Run Recourse Audit on Training Data
 # auditor = rs.RecourseAuditor(A, coefficients=clf.coef_, intercept=clf.intercept_)

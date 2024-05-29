@@ -1,4 +1,4 @@
-from typing import ClassVar, Literal, TypedDict
+from typing import Any, ClassVar, Literal, TypedDict, cast
 from typing_extensions import Unpack
 
 import numpy as np
@@ -20,10 +20,16 @@ pd.set_option("display.max_columns", 10)
 __all__ = ["Flipset"]
 
 
-class SortArgs(TypedDict):
+class SortArgs(TypedDict, total=False):
     by: list[Literal["cost", "size", "score_new"]]
     inplace: bool
     axis: Literal[0, 1]
+
+
+class FlipsetItem(TypedDict):
+    feasible: bool
+    actions: npt.NDArray
+    cost: float
 
 
 class Flipset:
@@ -293,7 +299,7 @@ class Flipset:
         )
         return flat_df.set_index("item")
 
-    def to_latex(self, name_formatter="\\textit"):
+    def to_latex(self, name_formatter: str = "\\textit") -> str:
         """
         converts current Flipset to Latex table
         :param name_formatter:
@@ -339,7 +345,7 @@ class Flipset:
         # remove the numbering on the left if possible?
         cfpb_color = "#e2efd8"
 
-        def _color_white_or_gray(row):
+        def _color_white_or_gray(row: pd.Series) -> list[str]:
             first_item = row.name if isinstance(row.name, int) else row.name[0]
             color = "white" if first_item % 2 == 1 else cfpb_color
             res = "background-color: %s" % color
@@ -358,8 +364,8 @@ class Flipset:
                     [{"selector": "tr", "props": [("background-color", "white")]}]
                 )
                 .apply(_color_white_or_gray, axis=1)
-                .hide_index()
-                .render()
+                .hide(axis="index")
+                .to_html()
             )
             ## style 2
             html = '<span style="' + style + '">No Recourse</span>'
@@ -389,13 +395,13 @@ class Flipset:
                 [{"selector": "tr", "props": [("background-color", "white")]}]
             )
             .apply(_color_white_or_gray, axis=1)
-            .hide_index()
-            .render()
+            .hide(axis="index")
+            .to_html()
         )
         return html
 
     #### item management ####
-    def _add(self, items):
+    def _add(self, items: FlipsetItem | list[FlipsetItem]):
         """
         :param items: adds new items to flipset
         :return:
@@ -403,11 +409,11 @@ class Flipset:
         if isinstance(items, dict):
             items = [items]
         assert isinstance(items, list)
-        items = list(map(lambda i: self._validate_item(i), items))
+        items = [self._validate_item(i) for i in items]
         self._items.extend(items)
         self._add_to_df(items)
 
-    def _validate_item(self, item):
+    def _validate_item(self, item: FlipsetItem) -> FlipsetItem:
         """
         checks item to be added to the current Flipset
         :param item: raw flipset item
@@ -422,7 +428,7 @@ class Flipset:
         assert item["feasible"], "item must be feasible"
         return item
 
-    def _validate_action(self, a):
+    def _validate_action(self, a: npt.NDArray) -> npt.NDArray:
         """
         checks action vector to the added to the current Flipset
         :param a: action vector
@@ -437,17 +443,17 @@ class Flipset:
         )
         return a
 
-    def _add_to_df(self, items):
+    def _add_to_df(self, items: list[FlipsetItem]):
         if len(items) > 0:
-            row_data = list(map(lambda item: self._item_to_df_row(item), items))
-            pd.concat(
+            row_data = [self._item_to_df_row(item) for item in items]
+            self._df = pd.concat(
                 [self._df, pd.DataFrame.from_records(row_data)],
                 ignore_index=True,
                 sort=True,
             )[self._df.columns.tolist()]
             self.sort()
 
-    def _item_to_df_row(self, item):
+    def _item_to_df_row(self, item: FlipsetItem) -> dict[str, Any]:
         """
         converts item to a row in the data frame
         :param item:

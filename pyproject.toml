@@ -49,6 +49,7 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "W", "I", "UP", "PD"]
+ignore = ["PD901"]
 
 [tool.ruff.lint.isort]
 known-third-party = ["matplotlib", "numpy", "pandas"]
