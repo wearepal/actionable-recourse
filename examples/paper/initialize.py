@@ -202,9 +202,9 @@ def get_coefficient_df(model_dict, variable_names=None, scaler=None):
         )
 
         if variable_names is None:
-            coef_vals = pd.Series(
-                coef_vals, index=["x%d" % j for j in range(coef_vals)]
-            ).to_frame(k)
+            coef_vals = pd.Series(coef_vals, index=["x%d" % j for j in range(coef_vals)]).to_frame(
+                k
+            )
         else:
             coef_vals = pd.Series(coef_vals, index=variable_names).to_frame(k)
 
@@ -235,9 +235,7 @@ def format_gridsearch_df(grid_search_df, settings, n_coefficients, invert_C=True
     train_score_df = (
         grid_search_df.loc[
             :,
-            filter(
-                lambda x: "train_score" in x and "split" in x, grid_search_df.columns
-            ),
+            filter(lambda x: "train_score" in x and "split" in x, grid_search_df.columns),
         ]
         .unstack()
         .reset_index()
@@ -253,9 +251,7 @@ def format_gridsearch_df(grid_search_df, settings, n_coefficients, invert_C=True
     test_score_df = (
         grid_search_df.loc[
             :,
-            filter(
-                lambda x: "test_score" in x and "split" in x, grid_search_df.columns
-            ),
+            filter(lambda x: "test_score" in x and "split" in x, grid_search_df.columns),
         ]
         .unstack()
         .reset_index()
@@ -268,19 +264,14 @@ def format_gridsearch_df(grid_search_df, settings, n_coefficients, invert_C=True
         )
     )
 
-    model_stats_df = pd.concat(
-        [train_score_df, test_score_df.drop("split_num", axis=1)], axis=1
-    )
+    model_stats_df = pd.concat([train_score_df, test_score_df.drop("split_num", axis=1)], axis=1)
     model_stats_df["dataname"] = settings["data_name"]
     param_df = grid_search_df["params"].apply(pd.Series)
     if invert_C:
         param_df["C"] = 1 / param_df["C"]
     param_df = (
         param_df.rename(
-            columns={
-                col: "param %d: %s" % (idx, col)
-                for idx, col in enumerate(param_df.columns)
-            }
+            columns={col: "param %d: %s" % (idx, col) for idx, col in enumerate(param_df.columns)}
         )
     ).assign(key=grid_search_df["key"])
 
@@ -342,9 +333,7 @@ def get_flipset_solutions(
                 fb.x = u
                 audit_results.append(fb.fit())
 
-        print_log(
-            "runtime: solved %i IPs in %1.1f seconds" % (i, time.time() - start_time)
-        )
+        print_log("runtime: solved %i IPs in %1.1f seconds" % (i, time.time() - start_time))
 
     return audit_results
 
@@ -453,9 +442,7 @@ def create_coefficient_path_plot(
         n_lines = len(coef_lines)
         xmin = ax.get_xlim()[0]
         xvals = [2.5 * xmin] * n_lines
-        label_lines(
-            coef_lines, xvals=xvals, align=label_halign, clip_on=False, **kwargs
-        )
+        label_lines(coef_lines, xvals=xvals, align=label_halign, clip_on=False, **kwargs)
 
     ax.hlines(0, *ax.get_xlim(), linestyle="dashed", alpha=0.5)
     return f, ax
@@ -614,9 +601,7 @@ def refomat_gridsearch_df(grid_search_df, settings, n_coefficients, invert_C=Tru
     train_score_df = (
         grid_search_df.loc[
             :,
-            filter(
-                lambda x: "train_score" in x and "split" in x, grid_search_df.columns
-            ),
+            filter(lambda x: "train_score" in x and "split" in x, grid_search_df.columns),
         ]
         .unstack()
         .reset_index()
@@ -632,9 +617,7 @@ def refomat_gridsearch_df(grid_search_df, settings, n_coefficients, invert_C=Tru
     test_score_df = (
         grid_search_df.loc[
             :,
-            filter(
-                lambda x: "test_score" in x and "split" in x, grid_search_df.columns
-            ),
+            filter(lambda x: "test_score" in x and "split" in x, grid_search_df.columns),
         ]
         .unstack()
         .reset_index()
@@ -647,19 +630,14 @@ def refomat_gridsearch_df(grid_search_df, settings, n_coefficients, invert_C=Tru
         )
     )
 
-    model_stats_df = pd.concat(
-        [train_score_df, test_score_df.drop("split_num", axis=1)], axis=1
-    )
+    model_stats_df = pd.concat([train_score_df, test_score_df.drop("split_num", axis=1)], axis=1)
     model_stats_df["dataname"] = settings["data_name"]
     param_df = grid_search_df["params"].apply(pd.Series)
     if invert_C:
         param_df["C"] = 1 / param_df["C"]
     param_df = (
         param_df.rename(
-            columns={
-                col: "param %d: %s" % (idx, col)
-                for idx, col in enumerate(param_df.columns)
-            }
+            columns={col: "param %d: %s" % (idx, col) for idx, col in enumerate(param_df.columns)}
         )
     ).assign(key=grid_search_df["key"])
 

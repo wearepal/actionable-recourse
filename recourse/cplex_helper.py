@@ -61,8 +61,7 @@ def add_variable_cpx(cpx, name, obj, ub, lb, vtype):
                 vtype = list(vtype)
             else:
                 raise ValueError(
-                    "invalid length: len(vtype) = %d. expected either 1 or %d"
-                    % (len(vtype), nvars)
+                    "invalid length: len(vtype) = %d. expected either 1 or %d" % (len(vtype), nvars)
                 )
 
         if isinstance(obj, np.ndarray):
@@ -74,8 +73,7 @@ def add_variable_cpx(cpx, name, obj, ub, lb, vtype):
                 obj = nvars * [float(obj)]
             else:
                 raise ValueError(
-                    "invalid length: len(obj) = %d. expected either 1 or %d"
-                    % (len(obj), nvars)
+                    "invalid length: len(obj) = %d. expected either 1 or %d" % (len(obj), nvars)
                 )
         else:
             obj = nvars * [float(obj)]
@@ -89,8 +87,7 @@ def add_variable_cpx(cpx, name, obj, ub, lb, vtype):
                 ub = nvars * [float(ub)]
             else:
                 raise ValueError(
-                    "invalid length: len(ub) = %d. expected either 1 or %d"
-                    % (len(ub), nvars)
+                    "invalid length: len(ub) = %d. expected either 1 or %d" % (len(ub), nvars)
                 )
         else:
             ub = nvars * [float(ub)]
@@ -104,8 +101,7 @@ def add_variable_cpx(cpx, name, obj, ub, lb, vtype):
                 lb = nvars * [float(lb)]
             else:
                 raise ValueError(
-                    "invalid length: len(lb) = %d. expected either 1 or %d"
-                    % (len(lb), nvars)
+                    "invalid length: len(lb) = %d. expected either 1 or %d" % (len(lb), nvars)
                 )
         else:
             lb = nvars * [float(lb)]
@@ -271,9 +267,7 @@ DEFAULT_CPLEX_PARAMETERS = {
 }
 
 
-def set_cpx_display_options(
-    cpx, display_mip=True, display_parameters=False, display_lp=False
-):
+def set_cpx_display_options(cpx, display_mip=True, display_parameters=False, display_lp=False):
     """
     Convenience function to turn on/off CPLEX functions
     :param cpx:

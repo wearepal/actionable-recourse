@@ -60,9 +60,7 @@ if settings["data_name"] == "credit":
     immutable_names = ["Female", "Single", "Married"] + list(
         filter(lambda x: "Age" in x or "Overdue" in x, data["variable_names"])
     )
-    data["immutable_variable_names"] = [
-        n for n in immutable_names if n in data["variable_names"]
-    ]
+    data["immutable_variable_names"] = [n for n in immutable_names if n in data["variable_names"]]
 
 data["X_train"] = data["X"]
 if settings["normalize_data"]:
@@ -112,9 +110,7 @@ if settings["train_classifiers"]:
         from sklearn.model_selection import StratifiedKFold as CVGenerator
     else:
         from sklearn.model_selection import KFold as CVGenerator
-    cv_generator = CVGenerator(
-        n_splits=settings["n_folds"], random_state=settings["random_seed"]
-    )
+    cv_generator = CVGenerator(n_splits=settings["n_folds"], random_state=settings["random_seed"])
 
     # the remainder of this code is a general purpose training function using GridSearchCV
     gridsearch = GridSearchCV(
@@ -149,9 +145,7 @@ if settings["train_classifiers"]:
         "all_models": final_models,
         "model_stats_df": model_stats_df,
         "best_model": gridsearch.best_estimator_,
-        "raw_coef_df": get_coefficient_df(
-            final_models, variable_names=data["variable_names"]
-        ),
+        "raw_coef_df": get_coefficient_df(final_models, variable_names=data["variable_names"]),
         "coef_df": get_coefficient_df(
             final_models, variable_names=data["variable_names"], scaler=data["scaler"]
         ),
@@ -176,9 +170,7 @@ if save_to_disk(file_names["coef_table"]):
         )
         xlabel = "$\ell_1$-penalty"
     else:
-        coef_df = coef_df.rename(
-            columns={col: float(col.split("_")[1]) for col in coef_df.columns}
-        )
+        coef_df = coef_df.rename(columns={col: float(col.split("_")[1]) for col in coef_df.columns})
         raw_coef_df = raw_coef_df.rename(
             columns={col: 1.0 / float(col.split("_")[1]) for col in raw_coef_df.columns}
         )
@@ -196,9 +188,7 @@ if save_to_disk(file_names["model_size"]):
         lambda df: df.loc[~df.index.isin(data["immutable_variable_names"])]
     ).sum()
     non_zero_sum.plot(ax=ax, marker="o", label="All Variables", markersize=14)
-    non_zero_sum_actionable.plot(
-        ax=ax, marker="o", label="Actionable Variables", markersize=14
-    )
+    non_zero_sum_actionable.plot(ax=ax, marker="o", label="Actionable Variables", markersize=14)
 
     # formatting
     max_nnz = np.max(np.sum(nnz_coef_df, axis=0))
@@ -219,9 +209,7 @@ if save_to_disk(file_names["error_path"]):
         .aggregate(["mean", "var"])
     )
     test_error = (
-        model_stats["model_stats_df"]
-        .groupby("param 0: C")["test_score"]
-        .aggregate(["mean", "var"])
+        model_stats["model_stats_df"].groupby("param 0: C")["test_score"].aggregate(["mean", "var"])
     )
 
     f, ax = create_figure()

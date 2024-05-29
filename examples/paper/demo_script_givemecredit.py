@@ -175,12 +175,8 @@ for dataset in ["full", "downsampled"]:
     flipset_df.to_csv(output_dir / "2018-11-19__demo-1__flipsets-%s.csv" % dataset)
 
 
-flipset_full = pd.read_csv(
-    output_dir / "2018-11-19__demo-1__flipsets-full.csv", index_col=0
-)
-flipset_age = pd.read_csv(
-    output_dir / "2018-11-19__demo-1__flipsets-downsampled.csv", index_col=0
-)
+flipset_full = pd.read_csv(output_dir / "2018-11-19__demo-1__flipsets-full.csv", index_col=0)
+flipset_age = pd.read_csv(output_dir / "2018-11-19__demo-1__flipsets-downsampled.csv", index_col=0)
 exp_df = pd.read_csv(output_dir / "2018-11-19__demo-1__exp-df.csv", index_col=0)
 
 exp_df = exp_df.loc[flipset_full.index]
@@ -265,9 +261,7 @@ combined_data_df = (
             (
                 exp_df.assign(**{"Training Run": "Full Dataset"})[
                     ["y_full_cost", "age", "Training Run", "y_true", "y_full_score"]
-                ].rename(
-                    columns={"y_full_cost": "total_cost", "y_full_score": "y_pred"}
-                )
+                ].rename(columns={"y_full_cost": "total_cost", "y_full_score": "y_pred"})
             ),
             (
                 exp_df.assign(**{"Training Run": "Age-downsampled"})[
@@ -363,9 +357,7 @@ if age_cutoff_exploration:
             index=train_cutoffs,
             columns=holdout_cutoffs,
         )
-        for train_cutoff, holdout_cutoff in itertools.product(
-            train_cutoffs, holdout_cutoffs
-        ):
+        for train_cutoff, holdout_cutoff in itertools.product(train_cutoffs, holdout_cutoffs):
             ## split dataset
             # training dataset
             X_train = X.loc[lambda df: df["age"] > train_cutoff]
@@ -411,9 +403,7 @@ if age_cutoff_exploration:
             y_pred_train = model_clone.predict_proba(X_train)[:, 1]
             y_pred_test = model_clone.predict_proba(X_audit_holdout)[:, 1]
             for i, metric in enumerate(metrics):
-                test_score = metric(
-                    y_test, y_pred_test, sample_weight=np.abs(1 - weights_test)
-                )
+                test_score = metric(y_test, y_pred_test, sample_weight=np.abs(1 - weights_test))
                 test_scores.append(score)
 
                 training_score = metric(
@@ -422,9 +412,7 @@ if age_cutoff_exploration:
                 training_scores.append(training_score)
         return training_scores, test_scores
 
-    weights = (
-        X["age"].pipe(lambda s: s > train_cutoff).map({True: 0.9, False: 0.1}).values
-    )
+    weights = X["age"].pipe(lambda s: s > train_cutoff).map({True: 0.9, False: 0.1}).values
     logistic_model = LogisticRegression()
     weighted_training_scores, weighted_test_scores = cross_val_scores_weighted(
         logistic_model, X, y, weights, cv=10
@@ -473,9 +461,7 @@ if age_cutoff_exploration:
     plt.title("AUCs")
     plt.xlabel("AUC on Age > x")
     plt.vlines(train_cutoff, *plt.ylim(), linestyles="dashed")
-    plt.text(
-        train_cutoff * 0.98, 0.725, "training\ncutoff", horizontalalignment="right"
-    )
+    plt.text(train_cutoff * 0.98, 0.725, "training\ncutoff", horizontalalignment="right")
 
     # ### Another look at age-cutoff AUC: Aucs over trained across age
     train_cutoff = 30
@@ -517,9 +503,7 @@ if age_cutoff_exploration:
     cmap = plt.get_cmap("RdYlGn")
     ax = score_and_age["c"].plot(
         kind="bar",
-        color=cmap(
-            score_and_age["age"].pipe(lambda s: (s - s.min()) / (s.max() - s.min()))
-        ),
+        color=cmap(score_and_age["age"].pipe(lambda s: (s - s.min()) / (s.max() - s.min()))),
     )
     ax.set_xticks(range(0, 50, 10))
     ax.set_xticklabels(["%.01f" % s for s in np.arange(0, 1, 0.2)])
@@ -550,9 +534,7 @@ if age_cutoff_exploration:
     ax = flipset_cost_and_age["c"].plot(
         kind="bar",
         color=cmap(
-            flipset_cost_and_age[color_var].pipe(
-                lambda s: (s - s.min()) / (s.max() - s.min())
-            )
+            flipset_cost_and_age[color_var].pipe(lambda s: (s - s.min()) / (s.max() - s.min()))
         ),
     )
 
@@ -580,8 +562,6 @@ if age_cutoff_exploration:
     ax.set_ylabel("Number of datapoints")
 
     plt.savefig(
-        output_dir
-        / "2018-08-12__hist-over-ages-and-costs__age-holdout-%d.png"
-        % train_cutoff,
+        output_dir / "2018-08-12__hist-over-ages-and-costs__age-holdout-%d.png" % train_cutoff,
         bbox_inches="tight",
     )

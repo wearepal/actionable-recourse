@@ -44,6 +44,9 @@ reportUnknownArgumentType = "none"
 reportMissingTypeArgument = "none"
 ignore = ["examples/**", "tests/**"]
 
+[tool.ruff]
+line-length = 100
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

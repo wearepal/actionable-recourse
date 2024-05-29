@@ -78,9 +78,7 @@ def test_subset_constraints(data):
         # add progressively larger constriants
         k = len(data["onehot_names"])
         for n in range(k):
-            a.add_constraint(
-                constraint_type="subset_limit", names=data["onehot_names"], lb=0, ub=n
-            )
+            a.add_constraint(constraint_type="subset_limit", names=data["onehot_names"], lb=0, ub=n)
 
         assert len(a.constraints) == k
 

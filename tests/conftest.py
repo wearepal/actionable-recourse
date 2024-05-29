@@ -138,9 +138,7 @@ def auditor(request, classifier, action_set):
 def flipset(request, classifier, action_set, denied_individual):
     print("request param")
     print(request.param)
-    return Flipset(
-        x=denied_individual, clf=classifier, action_set=action_set, solver=request.param
-    )
+    return Flipset(x=denied_individual, clf=classifier, action_set=action_set, solver=request.param)
 
 
 @pytest.fixture
@@ -154,25 +152,19 @@ def recourse_builder_cpx(classifier, action_set):
 @pytest.fixture
 def recourse_builder_python_mip(classifier, action_set):
     action_set.set_alignment(classifier)
-    rb = RecourseBuilder(
-        solver=_SOLVER_TYPE_PYTHON_MIP, action_set=action_set, clf=classifier
-    )
+    rb = RecourseBuilder(solver=_SOLVER_TYPE_PYTHON_MIP, action_set=action_set, clf=classifier)
 
     return rb
 
 
 @pytest.fixture
 def auditor_cpx(classifier, action_set):
-    return RecourseAuditor(
-        clf=classifier, action_set=action_set, solver=_SOLVER_TYPE_CPX
-    )
+    return RecourseAuditor(clf=classifier, action_set=action_set, solver=_SOLVER_TYPE_CPX)
 
 
 @pytest.fixture
 def auditor_python_mip(classifier, action_set):
-    return RecourseAuditor(
-        clf=classifier, action_set=action_set, solver=_SOLVER_TYPE_PYTHON_MIP
-    )
+    return RecourseAuditor(clf=classifier, action_set=action_set, solver=_SOLVER_TYPE_PYTHON_MIP)
 
 
 @pytest.fixture

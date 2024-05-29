@@ -77,18 +77,12 @@ custom_bounds = None
 immutable_variables = []
 if settings["data_name"] == "credit":
     immutable_names = ["Female", "Single", "Married"]
-    immutable_names += list(
-        filter(lambda x: "Age" in x or "Overdue" in x, data["variable_names"])
-    )
+    immutable_names += list(filter(lambda x: "Age" in x or "Overdue" in x, data["variable_names"]))
     default_bounds = (0.1, 99.9, "percentile")
     custom_bounds = {"Female": (0, 100, "p"), "Married": (0, 100, "p")}
-    data["immutable_variable_names"] = [
-        n for n in immutable_names if n in data["variable_names"]
-    ]
+    data["immutable_variable_names"] = [n for n in immutable_names if n in data["variable_names"]]
 
-    action_set = ActionSet(
-        X=data["X"], custom_bounds=custom_bounds, default_bounds=default_bounds
-    )
+    action_set = ActionSet(X=data["X"], custom_bounds=custom_bounds, default_bounds=default_bounds)
     action_set[data["immutable_variable_names"]].mutable = False
 
     action_set["EducationLevel"].step_direction = 1
@@ -111,9 +105,7 @@ action_set.align(coefficients)
 predicted_neg = np.flatnonzero(yhat < 1)
 U = data["X"].iloc[predicted_neg].values
 k = 4
-fb = Flipset(
-    x=U[k], action_set=action_set, coefficients=coefficients, intercept=intercept
-)
+fb = Flipset(x=U[k], action_set=action_set, coefficients=coefficients, intercept=intercept)
 fb.populate(enumeration_type="distinct_subsets", total_items=14)
 print(fb)
 
@@ -135,9 +127,7 @@ for key, clf in all_models.items():
     else:
         coefficients, intercept = np.array(clf.coef_).flatten(), clf.intercept_[0]
 
-    auditor = RecourseAuditor(
-        action_set, coefficients=coefficients, intercept=intercept
-    )
+    auditor = RecourseAuditor(action_set, coefficients=coefficients, intercept=intercept)
     audit_results[model_name] = auditor.audit(X=data["X"])
 
 if settings["save_flag"]:
@@ -215,9 +205,7 @@ if settings["plot_audits"]:
     plt.close()
 
     # store median cost
-    cost_df.median(axis=0).to_csv(
-        "%s_median_cost_df.csv" % settings["audit_file_header"]
-    )
+    cost_df.median(axis=0).to_csv("%s_median_cost_df.csv" % settings["audit_file_header"])
 
     # plot the mean cost of recourse
     f, ax = create_figure(fig_size=(6, 6))
@@ -227,9 +215,7 @@ if settings["plot_audits"]:
     plt.xlabel(xlabel)
     plt.ylabel("Mean Cost of Recourse")
     ax = fix_font_sizes(ax)
-    f.savefig(
-        "%s_recourse_cost.pdf" % settings["audit_file_header"], bbox_inches="tight"
-    )
+    f.savefig("%s_recourse_cost.pdf" % settings["audit_file_header"], bbox_inches="tight")
     plt.close()
 
 
@@ -245,18 +231,12 @@ clf = all_models[key]
 scaler_pkl = os.path.join(os.path.dirname(settings["model_file"]), "scaler.pkl")
 scaler = pickle.load(open(scaler_pkl, "rb"))
 immutable_names = ["Female", "Single", "Married"]
-immutable_names += list(
-    filter(lambda x: "Age" in x or "Overdue" in x, data["variable_names"])
-)
+immutable_names += list(filter(lambda x: "Age" in x or "Overdue" in x, data["variable_names"]))
 default_bounds = (0.1, 99.9, "percentile")
 custom_bounds = {"Female": (0, 100, "p"), "Married": (0, 100, "p")}
-data["immutable_variable_names"] = [
-    n for n in immutable_names if n in data["variable_names"]
-]
+data["immutable_variable_names"] = [n for n in immutable_names if n in data["variable_names"]]
 
-action_set = ActionSet(
-    X=data["X"], custom_bounds=custom_bounds, default_bounds=default_bounds
-)
+action_set = ActionSet(X=data["X"], custom_bounds=custom_bounds, default_bounds=default_bounds)
 action_set[data["immutable_variable_names"]].mutable = False
 
 action_set["EducationLevel"].step_direction = 1

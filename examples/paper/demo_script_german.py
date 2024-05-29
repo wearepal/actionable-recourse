@@ -17,9 +17,7 @@ X = data_df.drop("GoodCustomer", axis=1).drop(
 )
 
 ## set up actionset
-gender_weight = (
-    data_df.assign(c=1).groupby("Gender")["c"].transform(lambda s: s * 1.0 / len(s))
-)
+gender_weight = data_df.assign(c=1).groupby("Gender")["c"].transform(lambda s: s * 1.0 / len(s))
 X_gender_balanced = X.sample(n=len(X) * 3, replace=True, weights=gender_weight)
 action_set = ActionSet(X=X_gender_balanced)
 action_set["Age"].mutable = False
@@ -80,9 +78,7 @@ else:
 
     ## get the distribution over train and test scores across model hyperparameters
     grid_df = pd.DataFrame(grid.cv_results_)
-    grid_df = grid_df.assign(lambda_=lambda df: 1.0 / df["param_C"]).set_index(
-        "lambda_"
-    )[
+    grid_df = grid_df.assign(lambda_=lambda df: 1.0 / df["param_C"]).set_index("lambda_")[
         [
             "mean_train_score",
             "mean_test_score",
@@ -157,19 +153,14 @@ else:
     ## Examine histogram of actions
     def convert_array_col_cache_to_col(col):
         return (
-            col.str.replace("[", "")
-            .str.replace("]", "")
-            .str.split()
-            .apply(lambda x: map(float, x))
+            col.str.replace("[", "").str.replace("]", "").str.split().apply(lambda x: map(float, x))
         )
 
     flipset_df = pd.read_csv(output_dir / "2018-11-11_flipset-german-demo-cache.csv")
     flipset_df = flipset_df.assign(
         actions=lambda df: df["actions"].pipe(convert_array_col_cache_to_col)
     ).assign(costs=lambda df: df["costs"].pipe(convert_array_col_cache_to_col))
-    scores = pd.read_csv(
-        output_dir / "2018-08-12__demo-2-scores.csv", index_col=0, squeeze=True
-    )
+    scores = pd.read_csv(output_dir / "2018-08-12__demo-2-scores.csv", index_col=0, squeeze=True)
 
 flipset_df["sum_cost"] = flipset_df["costs"].apply(sum)
 matching_df = (
@@ -204,9 +195,7 @@ for y_true in [-1, 1]:
         x="y_pred_bin",
         y="total_cost",
         hue="Gender",
-        data=matching_df.loc[lambda df: df["GoodCustomer"] == y_true].sort_values(
-            "Gender"
-        ),
+        data=matching_df.loc[lambda df: df["GoodCustomer"] == y_true].sort_values("Gender"),
         linewidth=0.5,
         cut=0,
         background="white",
@@ -236,12 +225,8 @@ for y_true in [-1, 1]:
         l.set_linestyle("-")
         l.set_solid_capstyle("butt")
     # plt.legend(mode='expandoutput_dir + ')
-    plt.savefig(
-        output_dir / "matched-cost-by-y-pred-y-%d.png" % y_true, bbox_inches="tight"
-    )
-    plt.savefig(
-        output_dir / "matched-cost-by-y-pred-y-%d.pdf" % y_true, bbox_inches="tight"
-    )
+    plt.savefig(output_dir / "matched-cost-by-y-pred-y-%d.png" % y_true, bbox_inches="tight")
+    plt.savefig(output_dir / "matched-cost-by-y-pred-y-%d.pdf" % y_true, bbox_inches="tight")
     plt.close()
 
 coef_df = pd.Series(clf.coef_[0], index=X.columns).to_frame("Coefficient")
@@ -252,15 +237,9 @@ agg_dfs = {}
 for y_true in [-1, +1]:
     agg_df = (
         matching_df.loc[lambda df: df["GoodCustomer"] == y_true]
-        .pipe(
-            lambda df: df.groupby(
-                pd.cut(df["y_pred"], bins=np.arange(0, scores.median(), 0.1))
-            )
-        )
+        .pipe(lambda df: df.groupby(pd.cut(df["y_pred"], bins=np.arange(0, scores.median(), 0.1))))
         .apply(
-            lambda df: df.loc[lambda df: df["Gender"] == "Female"][
-                "total_cost"
-            ].median()
+            lambda df: df.loc[lambda df: df["Gender"] == "Female"]["total_cost"].median()
             / df.loc[lambda df: df["Gender"] == "Male"]["total_cost"].median()
         )
         .fillna(1)
@@ -378,9 +357,7 @@ plt.title("Score Distribution")
 ylim = plt.ylim()
 plt.vlines(scores.median(), *plt.ylim(), linestyles="dashed")
 plt.ylim(ylim)
-plt.text(
-    scores.median() * 0.99, 42, "Median Score", horizontalalignment="right", fontsize=18
-)
+plt.text(scores.median() * 0.99, 42, "Median Score", horizontalalignment="right", fontsize=18)
 plt.grid(False)
 plt.savefig(output_dir / "score_distribution_female.png", bbox_inches="tight")
 plt.close()
@@ -443,9 +420,7 @@ plt.legend(
     mode="expand",
     loc="upper right",
 )  # bbox_to_anchor=(.18, .51, .875, .51), )
-plt.savefig(
-    output_dir / "2018-08-12__matched-cost-by-true-label.pdf", bbox_inches="tight"
-)
+plt.savefig(output_dir / "2018-08-12__matched-cost-by-true-label.pdf", bbox_inches="tight")
 plt.close()
 
 # plot distribution of scores

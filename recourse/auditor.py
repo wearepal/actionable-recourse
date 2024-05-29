@@ -99,9 +99,7 @@ class RecourseAuditor(object):
 
         # solve recourse problem
         output = []
-        pbar = tqdm(
-            total=len(audit_idx)
-        )  ## stop tqdm from playing badly in ipython notebook.
+        pbar = tqdm(total=len(audit_idx))  ## stop tqdm from playing badly in ipython notebook.
         for idx in audit_idx:
             self.builder.x = U[idx, :]
             info = self.builder.fit()

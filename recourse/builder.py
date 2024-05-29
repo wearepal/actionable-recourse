@@ -88,9 +88,7 @@ class RecourseBuilder(object):
         self._min_items = 0
         self._max_items = self.n_actionable
 
-        self._apriori_infeasible = (
-            False  ## useful if we want to hardcode conditions where
-        )
+        self._apriori_infeasible = False  ## useful if we want to hardcode conditions where
         ## we won't run the MIP, like empty actionsets.
         # attach features
         self._x = None
@@ -350,9 +348,7 @@ class RecourseBuilder(object):
                     c = cost_up(c)
 
                 # override numerical issues
-                bug_idx = np.logical_or(
-                    np.less_equal(c, 0.0), np.isclose(a, 0.0, atol=1e-8)
-                )
+                bug_idx = np.logical_or(np.less_equal(c, 0.0), np.isclose(a, 0.0, atol=1e-8))
                 bug_idx = np.flatnonzero(bug_idx).tolist()
                 bug_idx.pop(0)
                 if len(bug_idx) > 0:
@@ -616,9 +612,7 @@ class _RecourseBuilderCPX(RecourseBuilder):
                        (e.g. type of cost function to use / max items etc.)
         """
         # initialize Cplex MIP
-        self._cpx_parameters = kwargs.get(
-            "cplex_parameters", self._default_cplex_parameters
-        )
+        self._cpx_parameters = kwargs.get("cplex_parameters", self._default_cplex_parameters)
         self._set_mip_time_limit = set_cpx_time_limit
         self._set_mip_node_limit = set_cpx_node_limit
         self._set_mip_display = lambda mip, flag: set_cpx_display_options(
@@ -666,9 +660,7 @@ class _RecourseBuilderCPX(RecourseBuilder):
         score_constraint_sense = "G" if self.action_set.y_desired > 0 else "L"
         cons.add(
             names=["score"],
-            lin_expr=[
-                SparsePair(ind=indices["action_var_names"], val=indices["coefficients"])
-            ],
+            lin_expr=[SparsePair(ind=indices["action_var_names"], val=indices["coefficients"])],
             senses=[score_constraint_sense],
             rhs=[-self.score()],
         )
@@ -688,9 +680,7 @@ class _RecourseBuilderCPX(RecourseBuilder):
                         ind=info["action_var_name"] + info["action_ind_names"],
                         val=[-1.0] + info["actions"],
                     ),
-                    SparsePair(
-                        ind=info["action_ind_names"], val=[1.0] * len(info["actions"])
-                    ),
+                    SparsePair(ind=info["action_ind_names"], val=[1.0] * len(info["actions"])),
                 ],
                 senses=["E", "E"],
                 rhs=[0.0, 1.0],
@@ -714,9 +704,7 @@ class _RecourseBuilderCPX(RecourseBuilder):
         # min_size <= size:
         # min_size          <=  n_actionable - sum_j u[j][0]
         # sum_j u[j][0]     <=  n_actionable - min_size
-        size_expr = SparsePair(
-            ind=indices["action_off_names"], val=[1.0] * n_actionable
-        )
+        size_expr = SparsePair(ind=indices["action_off_names"], val=[1.0] * n_actionable)
         cons.add(
             names=["max_items", "min_items"],
             lin_expr=[size_expr, size_expr],
@@ -758,12 +746,7 @@ class _RecourseBuilderCPX(RecourseBuilder):
         if cost_type in ("total", "local"):
             indices.pop("cost_var_names")
             objval_pairs = list(
-                chain(
-                    *[
-                        list(zip(v["action_ind_names"], v["costs"]))
-                        for v in build_info.values()
-                    ]
-                )
+                chain(*[list(zip(v["action_ind_names"], v["costs"])) for v in build_info.values()])
             )
             mip.objective.set_linear(objval_pairs)
 
@@ -771,9 +754,7 @@ class _RecourseBuilderCPX(RecourseBuilder):
             indices["max_cost_var_name"] = ["max_cost"]
 
             ## handle empty actionsets
-            indices["epsilon"] = np.min(indices["cost_df"] or np.inf) / np.sum(
-                indices["cost_ub"]
-            )
+            indices["epsilon"] = np.min(indices["cost_df"] or np.inf) / np.sum(indices["cost_ub"])
             vars.add(
                 names=indices["max_cost_var_name"] + indices["cost_var_names"],
                 types=["C"] * (n_actionable + 1),
@@ -871,9 +852,7 @@ class _RecourseBuilderCPX(RecourseBuilder):
             if "cost_var_names" in indices and self.mip_cost_type != "total":
                 cost_values = sol.get_values(indices["cost_var_names"])
             else:
-                ind_idx = np.flatnonzero(
-                    np.array(sol.get_values(indices["action_ind_names"]))
-                )
+                ind_idx = np.flatnonzero(np.array(sol.get_values(indices["action_ind_names"])))
                 ind_names = [indices["action_ind_names"][int(k)] for k in ind_idx]
                 cost_values = mip.objective.get_linear(ind_names)
 
@@ -1093,9 +1072,7 @@ class _RecourseBuilderPythonMIP(RecourseBuilder):
         # min_size <= size:
         # min_size          <=  n_actionable - sum_j u[j][0]
         # sum_j u[j][0]     <=  n_actionable - min_size
-        num_off = xsum(
-            mip.u[indices["action_off_names"][k]] for k in range(n_actionable)
-        )
+        num_off = xsum(mip.u[indices["action_off_names"][k]] for k in range(n_actionable))
         mip += num_off >= float(n_actionable - max_items), "max_items"
         mip += num_off <= float(n_actionable - min_items), "min_items"
 
@@ -1112,12 +1089,7 @@ class _RecourseBuilderPythonMIP(RecourseBuilder):
         if cost_type in ("total", "local"):
             indices.pop("cost_var_names")
             objval_pairs = list(
-                chain(
-                    *[
-                        list(zip(v["action_ind_names"], v["costs"]))
-                        for v in build_info.values()
-                    ]
-                )
+                chain(*[list(zip(v["action_ind_names"], v["costs"])) for v in build_info.values()])
             )
             self.cost_lookup_for_sol = dict(objval_pairs)
             mip.objective = xsum(mip.u[k] * c for k, c in objval_pairs)
@@ -1125,9 +1097,7 @@ class _RecourseBuilderPythonMIP(RecourseBuilder):
         elif cost_type == "max":
             indices["max_cost_var_name"] = ["max_cost"]
             ## handle empty actionsets
-            indices["epsilon"] = np.min(indices["cost_df"] or np.inf) / np.sum(
-                indices["cost_ub"]
-            )
+            indices["epsilon"] = np.min(indices["cost_df"] or np.inf) / np.sum(indices["cost_ub"])
             mip.max_cost_var = mip.add_var(name="max_cost", obj=1, var_type="C")
             mip.c = {
                 c: mip.add_var(name=c, var_type="C", obj=indices["epsilon"])
@@ -1180,9 +1150,7 @@ class _RecourseBuilderPythonMIP(RecourseBuilder):
     def solution_info(self):
         assert self._mip.status != mip.OptimizationStatus.LOADED
         info = self._empty_mip_solution_info
-        if (self._mip.status == mip.OptimizationStatus.OPTIMAL) and (
-            self._mip.gap != np.inf
-        ):
+        if (self._mip.status == mip.OptimizationStatus.OPTIMAL) and (self._mip.gap != np.inf):
             indices = self._mip_indices
             variable_idx = indices["var_idx"]
 

@@ -15,11 +15,7 @@ def test_flipset_distinct_subsets(flipset):
     # generate flipset for person i
     items = flipset.populate(total_items=5, enumeration_type="distinct_subsets").items
     actions = np.array(list(map(lambda x: x["actions"], items))).astype(int)
-    on_actions = (
-        pd.DataFrame(actions)
-        .pipe(lambda df: pd.DataFrame(~np.isclose(df, 0)))
-        .astype(int)
-    )
+    on_actions = pd.DataFrame(actions).pipe(lambda df: pd.DataFrame(~np.isclose(df, 0))).astype(int)
     num_actions_on = on_actions.sum(axis=1)
 
     ## check that the overlap between different actions is less than the max of either actionset

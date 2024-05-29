@@ -93,9 +93,7 @@ class ActionSet:
         xdim = X.shape
         assert len(xdim) == 2, "`values` must be a matrix"
         assert xdim[0] >= 1, "`values` must have at least 1 row"
-        assert xdim[1] == len(names), (
-            "`values` must contain len(`names`) = %d columns" % len(names)
-        )
+        assert xdim[1] == len(names), "`values` must contain len(`names`) = %d columns" % len(names)
         assert np.array_equal(X, X + 0.0), "values must be numeric"
 
         # parse key word arguments
@@ -180,18 +178,12 @@ class ActionSet:
             raise IndexError("index must be str, int, a list of strings/int or a slice")
 
     def __setitem__(self, name: str, e: "_ActionElement") -> None:
-        assert isinstance(
-            e, _ActionElement
-        ), "ActionSet can only contain ActionElements"
+        assert isinstance(e, _ActionElement), "ActionSet can only contain ActionElements"
         assert name in self._names, "no variable with name %s in ActionSet"
         self._elements.update({name: e})
 
     def __getattribute__(self, name: str):
-        if (
-            name[0] == "_"
-            or name in ("alignment_known")
-            or not hasattr(_ActionElement, name)
-        ):
+        if name[0] == "_" or name in ("alignment_known") or not hasattr(_ActionElement, name):
             return object.__getattribute__(self, name)
         else:
             return [getattr(self._elements[n], name) for n, j in self._indices.items()]
@@ -299,9 +291,7 @@ class ActionSet:
                 for n, j in self._indices.items():
                     self._elements[n].flip_direction = -self._elements[n].flip_direction
 
-    def set_alignment(
-        self, *args: SklearnClassifier, **kwargs: Unpack[ClassifierKwargs]
-    ):
+    def set_alignment(self, *args: SklearnClassifier, **kwargs: Unpack[ClassifierKwargs]):
         """
         uses a classifier to determine the "alignment" of actions on each variable
         if the coefficient for variable j is positive, then actions that increase variable j will flip prediction
@@ -338,27 +328,19 @@ class ActionSet:
         :param return_compatible: set to True to build a grid using only compatible variables
         :return: dictionary of the form {name: feasible_values}
         """
-        assert isinstance(
-            x, (list, np.ndarray)
-        ), "feature values should be list or np.ndarray"
-        assert len(x) == len(self), "dimension mismatch x should have len %d" % len(
-            self
-        )
+        assert isinstance(x, (list, np.ndarray)), "feature values should be list or np.ndarray"
+        assert len(x) == len(self), "dimension mismatch x should have len %d" % len(self)
         assert np.isfinite(x).all(), "x must contain finite values"
 
         if return_compatible:
             output = {
-                n: self._elements[n].feasible_values(
-                    x[j], return_actions, return_percentiles
-                )
+                n: self._elements[n].feasible_values(x[j], return_actions, return_percentiles)
                 for n, j in self._indices.items()
                 if self._elements[n].compatible
             }
         else:
             output = {
-                n: self._elements[n].feasible_values(
-                    x[j], return_actions, return_percentiles
-                )
+                n: self._elements[n].feasible_values(x[j], return_actions, return_percentiles)
                 for n, j in self._indices.items()
             }
 
@@ -374,9 +356,7 @@ class ActionSet:
                 )
 
         if return_percentiles:
-            return {n: v[0] for n, v in output.items()}, {
-                n: v[1] for n, v in output.items()
-            }
+            return {n: v[0] for n, v in output.items()}, {n: v[1] for n, v in output.items()}
 
         return output
 
@@ -487,11 +467,7 @@ class _ActionConstraints(object):
             names = [c.names for c in self._constraints.values()]
         else:
             assert constraint_type in _VALID_CONSTRAINT_TYPES
-            names = [
-                c.names
-                for c in self._constraints.values()
-                if isinstance(c, constraint_type)
-            ]
+            names = [c.names for c in self._constraints.values() if isinstance(c, constraint_type)]
 
         # choose unique names
         names = set(itertools.chain.from_iterable(names))
@@ -551,12 +527,8 @@ class _ActionConstraints(object):
         # check bounds
         lb = int(lb)
         ub = int(ub)
-        assert 0 <= lb <= self._n_variables, (
-            "lb must be between 0 to %d" % self._n_variables
-        )
-        assert 0 <= ub <= self._n_variables, (
-            "ub must be between 0 to %d" % self._n_variables
-        )
+        assert 0 <= lb <= self._n_variables, "lb must be between 0 to %d" % self._n_variables
+        assert 0 <= ub <= self._n_variables, "ub must be between 0 to %d" % self._n_variables
         assert lb <= ub
 
         # sort names to match order of names in X
@@ -732,13 +704,9 @@ class _ActionElement:
     def bound_type(self):
         b = self._bounds
         if b.bound_type == "percentile":
-            b_new = _BoundElement(
-                bound_type="percentile", lb=b.qlb, ub=b.qub, values=self._values
-            )
+            b_new = _BoundElement(bound_type="percentile", lb=b.qlb, ub=b.qub, values=self._values)
         else:
-            b_new = _BoundElement(
-                bound_type=b.bound_type, lb=b.lb, ub=b.ub, values=self._values
-            )
+            b_new = _BoundElement(bound_type=b.bound_type, lb=b.lb, ub=b.ub, values=self._values)
         self._bounds = b_new
 
     @property
@@ -754,9 +722,7 @@ class _ActionElement:
             if len(b) == 2:
                 b = _BoundElement(values=self._values, lb=b[0], ub=b[1])
             elif len(b) == 3:
-                b = _BoundElement(
-                    values=self._values, lb=b[0], ub=b[1], bound_type=b[2]
-                )
+                b = _BoundElement(values=self._values, lb=b[0], ub=b[1], bound_type=b[2])
         elif b is None:
             b = _BoundElement(values=self._values)
         assert isinstance(
@@ -772,13 +738,9 @@ class _ActionElement:
     def lb(self, value: float) -> None:
         b = self._bounds
         if b.bound_type == "percentile":
-            b_new = _BoundElement(
-                bound_type="percentile", lb=value, ub=b.qub, values=self._values
-            )
+            b_new = _BoundElement(bound_type="percentile", lb=value, ub=b.qub, values=self._values)
         else:
-            b_new = _BoundElement(
-                bound_type=b.bound_type, lb=value, ub=b.ub, values=self._values
-            )
+            b_new = _BoundElement(bound_type=b.bound_type, lb=value, ub=b.ub, values=self._values)
         self._bounds = b_new
 
     @property
@@ -789,13 +751,9 @@ class _ActionElement:
     def ub(self, value: float) -> None:
         b = self._bounds
         if b.bound_type == "percentile":
-            b_new = _BoundElement(
-                bound_type="percentile", lb=b.qlb, ub=value, values=self._values
-            )
+            b_new = _BoundElement(bound_type="percentile", lb=b.qlb, ub=value, values=self._values)
         else:
-            b_new = _BoundElement(
-                bound_type=b.bound_type, lb=b.lb, ub=value, values=self._values
-            )
+            b_new = _BoundElement(bound_type=b.bound_type, lb=b.lb, ub=value, values=self._values)
         self._bounds = b_new
 
     #### alignment ####
@@ -890,9 +848,7 @@ class _ActionElement:
             self.update_interpolator()
         return self._interpolator
 
-    def update_interpolator(
-        self, left_buffer: float = 1e-6, right_buffer: float = 1e-6
-    ) -> None:
+    def update_interpolator(self, left_buffer: float = 1e-6, right_buffer: float = 1e-6) -> None:
         # check buffers
         left_buffer = float(left_buffer)
         right_buffer = float(right_buffer)
@@ -1079,9 +1035,7 @@ class _BoundElement(object):
             #     assert np.less_equal(lb, np.min(values))
             #     assert np.greater_equal(ub, np.max(values))
 
-        assert np.less_equal(
-            lb, ub
-        ), "Lower bound must be less than or equal to the upper bound."
+        assert np.less_equal(lb, ub), "Lower bound must be less than or equal to the upper bound."
 
         if variable_type == int:
             lb = np.floor(lb)
@@ -1166,9 +1120,7 @@ def _check_variable_names(names: list[str]) -> bool:
     assert isinstance(names, list), "`names` must be a list"
     assert all([isinstance(n, str) for n in names]), "`names` must be a list of strings"
     assert len(names) >= 1, "`names` must contain at least 1 element"
-    assert all(
-        [len(n) > 0 for n in names]
-    ), "elements of `names` must have at least 1 character"
+    assert all([len(n) > 0 for n in names]), "elements of `names` must have at least 1 character"
     assert len(names) == len(set(names)), "elements of `names` must be distinct"
     return True
 
@@ -1176,9 +1128,7 @@ def _check_variable_names(names: list[str]) -> bool:
 def _determine_variable_type(values, name=None):
     for v in values:
         if isinstance(v, str):
-            raise ValueError(
-                ">=1 elements %s are of type str" % ("in '%s'" % name if name else "")
-            )
+            raise ValueError(">=1 elements %s are of type str" % ("in '%s'" % name if name else ""))
     integer_valued = np.equal(np.mod(values, 1), 0).all()
     if integer_valued:
         if np.isin(values, (0, 1)).all():

@@ -59,12 +59,8 @@ bill_columns = [
 ]
 
 # processed_df['LastBillAmount'] = np.maximum(raw_df['BILL_AMT1'], 0)
-processed_df["MaxBillAmountOverLast6Months"] = np.maximum(
-    raw_df[bill_columns].max(axis=1), 0
-)
-processed_df["MaxPaymentAmountOverLast6Months"] = np.maximum(
-    raw_df[pay_columns].max(axis=1), 0
-)
+processed_df["MaxBillAmountOverLast6Months"] = np.maximum(raw_df[bill_columns].max(axis=1), 0)
+processed_df["MaxPaymentAmountOverLast6Months"] = np.maximum(raw_df[pay_columns].max(axis=1), 0)
 processed_df["MonthsWithZeroBalanceOverLast6Months"] = np.sum(
     np.greater(raw_df[pay_columns].values, raw_df[bill_columns].values), axis=1
 )
@@ -112,9 +108,7 @@ def count_zero_streaks(a):
 
 overdue_counts = np.repeat(np.nan, len(raw_df))
 n_overdue_months = np.sum(overdue_history > 0, axis=1)
-overdue_counts[n_overdue_months == 0] = (
-    0  # count_zero_streaks doesn't work for edge cases
-)
+overdue_counts[n_overdue_months == 0] = 0  # count_zero_streaks doesn't work for edge cases
 overdue_counts[n_overdue_months == 6] = 1
 for k in range(1, len(overdue)):
     idx = n_overdue_months == k

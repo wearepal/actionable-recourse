@@ -49,9 +49,7 @@ def test_rb_onehot_encoding(data, solver):
         a = ActionSet(X)
         a.add_constraint("subset_limit", names=names, lb=0, ub=1)
         a.set_alignment(coefficients=coefs, intercept=intercept)
-        rb = RecourseBuilder(
-            action_set=a, coefficients=coefs, intercept=intercept, solver=solver
-        )
+        rb = RecourseBuilder(action_set=a, coefficients=coefs, intercept=intercept, solver=solver)
         for j in range(1, k):
             x = np.zeros(k)
             x[j] = 1.0
@@ -79,9 +77,7 @@ def test_rb_fit(data, recourse_builder, features):
     assert output["cost"] >= 0.0
 
 
-def test_empty_fit(
-    data, features, action_set, coefficients, classifier, recourse_builder
-):
+def test_empty_fit(data, features, action_set, coefficients, classifier, recourse_builder):
     names = data["X"].columns.tolist()
     action_set.set_alignment(classifier)
     direction = np.sign(coefficients)

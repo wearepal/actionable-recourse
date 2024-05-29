@@ -112,10 +112,7 @@ class Flipset:
 
     @property
     def items(self):
-        return [
-            dict(zip(self.action_set._names, x["actions"].tolist()))
-            for x in self._items
-        ]
+        return [dict(zip(self.action_set._names, x["actions"].tolist())) for x in self._items]
 
     @property
     def actions(self):
@@ -430,9 +427,7 @@ class Flipset:
         :return: a or AssertionError
         """
         a = np.array(a, dtype=np.float_).flatten()
-        assert len(a) == self._n_variables, (
-            "action vector must have %d elements" % self.n_variables
-        )
+        assert len(a) == self._n_variables, "action vector must have %d elements" % self.n_variables
         assert np.isfinite(a).all(), "actions must be finite"
         assert np.count_nonzero(a) >= 1, "at least one action element must be non zero"
         assert np.not_equal(self.yhat, self.predict(a)), (
