@@ -8,11 +8,12 @@
 
 # fit
 # populate
-import pytest
 import numpy as np
-from recourse.defaults import SUPPORTED_SOLVERS
+import pytest
+
 from recourse.action_set import ActionSet
 from recourse.builder import RecourseBuilder
+from recourse.defaults import SUPPORTED_SOLVERS
 
 
 def test_rb_fit_without_initialization(data, recourse_builder):

@@ -1,7 +1,9 @@
-from examples.paper.initialize import *
+from copy import copy
+
 from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
-from copy import copy
+
+from examples.paper.initialize import *
 
 # user settings
 settings = {
@@ -168,7 +170,7 @@ if save_to_disk(file_names["coef_table"]):
         raw_coef_df = raw_coef_df.rename(
             columns={col: 1.0 / float(col.split("_")[1]) for col in raw_coef_df.columns}
         )
-        xlabel = "$\ell_1$-penalty"
+        xlabel = r"$\ell_1$-penalty"
     else:
         coef_df = coef_df.rename(columns={col: float(col.split("_")[1]) for col in coef_df.columns})
         raw_coef_df = raw_coef_df.rename(

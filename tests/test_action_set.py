@@ -1,5 +1,6 @@
-from recourse import ActionSet
 import numpy as np
+
+from recourse import ActionSet
 
 # Test Strategy
 # --------------------------------------------------------

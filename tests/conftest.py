@@ -1,14 +1,11 @@
-import pytest
 import numpy as np
 import pandas as pd
+import pytest
 from sklearn.linear_model import LogisticRegression
+
 from recourse import *
+from recourse.defaults import _SOLVER_TYPE_CPX, _SOLVER_TYPE_PYTHON_MIP, SUPPORTED_SOLVERS
 from recourse.paths import *
-from recourse.defaults import (
-    SUPPORTED_SOLVERS,
-    _SOLVER_TYPE_CPX,
-    _SOLVER_TYPE_PYTHON_MIP,
-)
 
 
 @pytest.fixture(params=["german", "german-cat"])

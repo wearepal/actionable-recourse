@@ -1,8 +1,4 @@
-from recourse import action_set
-from recourse import auditor
-from recourse import builder
-from recourse import flipset
-
+from recourse import action_set, auditor, builder, flipset
 from recourse.action_set import ActionSet
 from recourse.auditor import RecourseAuditor
 from recourse.builder import RecourseBuilder

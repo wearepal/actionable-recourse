@@ -1,8 +1,8 @@
-from examples.paper.initialize import *
-from sklearn.linear_model import LogisticRegressionCV, LogisticRegression
-from sklearn.model_selection import KFold, GridSearchCV
+from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
 from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import GridSearchCV, KFold
 
+from examples.paper.initialize import *
 
 data_name = "german"
 data_file = data_dir / "%s_processed.csv" % data_name
@@ -372,7 +372,7 @@ ax = (
 )
 plt.grid(False)
 plt.text(0.0545, 290, "HasGuarantor\n(0->1)", fontsize=15)
-plt.text(0.067, 80, "CheckingAcct. \nBal.$\geq$200\n(0->1)", fontsize=15)
+plt.text(0.067, 80, "CheckingAcct. \nBal.$\\geq$200\n(0->1)", fontsize=15)
 plt.ylabel("Count of Individuals")
 plt.xlabel("Cost of Recourse")
 ax.spines["right"].set_visible(False)

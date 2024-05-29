@@ -47,6 +47,16 @@ ignore = ["examples/**", "tests/**"]
 [tool.ruff]
 line-length = 100
 
+[tool.ruff.lint]
+select = ["E", "W", "I", "UP", "PD"]
+
+[tool.ruff.lint.isort]
+known-third-party = ["matplotlib", "numpy", "pandas"]
+extra-standard-library = ["typing_extensions"]
+no-lines-before = ["future", "standard-library"]
+force-sort-within-sections = true
+split-on-trailing-comma = false
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

@@ -1,8 +1,9 @@
 # This file contains convenience functions for CPLEX MIP Objects
-import numpy as np
 from functools import reduce
+
 from cplex import Cplex, SparsePair
 from cplex.exceptions import CplexError
+import numpy as np
 
 
 # Copying

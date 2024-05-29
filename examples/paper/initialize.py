@@ -1,17 +1,18 @@
 # General Packages
-from math import atan2, degrees
 from datetime import datetime
+from math import atan2, degrees
 from pathlib import Path
-import time
-import pprint
-import numpy as np
-import pandas as pd
 import pickle
+import pprint
+import time
+
+from matplotlib.dates import date2num
 
 # Plotting
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
-from matplotlib.dates import date2num
+import numpy as np
+import pandas as pd
 import seaborn as sns
 
 # Scaling
@@ -92,10 +93,9 @@ settings["audit_file"] = "%s_audit_results.pkl" % settings["audit_file_header"]
 
 # Recourse Objects
 from recourse.action_set import ActionSet
-from recourse.builder import RecourseBuilder
 from recourse.auditor import RecourseAuditor
+from recourse.builder import RecourseBuilder
 from recourse.flipset import Flipset
-
 
 ### Helper Functions for Experimental Script
 
@@ -429,7 +429,7 @@ def create_coefficient_path_plot(
     # labels etc
     ax.semilogx()
     ax.set_ylabel("Coefficient Values")
-    ax.set_xlabel("$\ell_1$-penalty (Log Scale)")
+    ax.set_xlabel(r"$\ell_1$-penalty (Log Scale)")
 
     # values should be symmetric
     ymin, ymax = ax.get_ylim()

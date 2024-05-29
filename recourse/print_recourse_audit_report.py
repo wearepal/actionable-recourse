@@ -1,5 +1,5 @@
-import seaborn as sns
 import numpy as np
+import seaborn as sns
 
 
 # X is the data to audit on

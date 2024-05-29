@@ -2,16 +2,16 @@ import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
 
-from recourse.defaults import DEFAULT_SOLVER
-from recourse.helper_functions import parse_classifier_args
 from recourse.action_set import ActionSet
 from recourse.builder import RecourseBuilder
+from recourse.defaults import DEFAULT_SOLVER
+from recourse.helper_functions import parse_classifier_args
 
 __all__ = ["RecourseAuditor"]
 
 
 # todo add timer / print
-class RecourseAuditor(object):
+class RecourseAuditor:
     """
     Compute feasibility and cost of recourse over a sample of points that were denied access.
     (i.e. this method will not be run on data points that are already qualifying, (eg. y_pred > 0).

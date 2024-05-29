@@ -1,18 +1,16 @@
-from typing import Literal, NamedTuple, TypeAlias, TypeVar, TypedDict
+import itertools
+from typing import Literal, NamedTuple, TypeAlias, TypedDict, TypeVar
 from typing_extensions import Unpack
 import warnings
+
 import numpy as np
-import pandas as pd
 from numpy import typing as npt
-import itertools
+import pandas as pd
 from prettytable import PrettyTable
-from recourse.helper_functions import (
-    ClassifierKwargs,
-    SklearnClassifier,
-    parse_classifier_args,
-)
-from scipy.stats import gaussian_kde as kde
 from scipy.interpolate import interp1d
+from scipy.stats import gaussian_kde as kde
+
+from recourse.helper_functions import ClassifierKwargs, SklearnClassifier, parse_classifier_args
 
 # todo: add doc string for feasible values
 # todo: replace percentiles with scikit-learn API
@@ -434,7 +432,7 @@ class SubsetLimitConstraint(NamedTuple):
 _VALID_CONSTRAINT_TYPES = [SubsetLimitConstraint]
 
 
-class _ActionConstraints(object):
+class _ActionConstraints:
     """
     Class to represent and manipulate constraints between variables
     """
@@ -914,7 +912,7 @@ class _ActionElement:
                 x_new = np.extract(np.less_equal(x_new, x), x_new)
 
             # include current point in the grid if it does not exist
-            if not x in x_new:
+            if x not in x_new:
                 x_new = np.insert(x_new, np.searchsorted(x_new, x), x)
 
         else:
@@ -938,7 +936,7 @@ class _ActionElement:
         return vals
 
 
-class _BoundElement(object):
+class _BoundElement:
     """
     Immutable class to store the lower and upper bounds for a feature.
     """
@@ -1073,7 +1071,7 @@ class _BoundElement(object):
         return "(%r, %r, %r)" % (self._lb, self._ub, self._bound_type)
 
 
-class _ActionSlice(object):
+class _ActionSlice:
     """
     Class to set ActionElement properties by slicing.
     This class allows us to support commands like:

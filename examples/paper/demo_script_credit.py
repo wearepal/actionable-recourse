@@ -136,7 +136,7 @@ if settings["save_flag"]:
 #### Plots ####
 if settings["plot_audits"]:
     if settings["method_name"] == "logreg":
-        xlabel = "$\ell_1$-penalty (log scale)"
+        xlabel = r"$\ell_1$-penalty (log scale)"
     else:
         xlabel = "$C$-penalty (log scale)"
     # percent of points without recourse

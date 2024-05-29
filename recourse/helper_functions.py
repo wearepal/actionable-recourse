@@ -1,5 +1,6 @@
-from typing import Protocol, TypeGuard, TypedDict
+from typing import Protocol, TypedDict, TypeGuard
 from typing_extensions import Unpack
+
 import numpy as np
 from numpy import typing as npt
 

@@ -1,24 +1,26 @@
+from collections import defaultdict
+from itertools import chain
 import time
 import warnings
-from itertools import chain
-from collections import defaultdict
+
+import numpy as np
+
+from recourse.action_set import ActionSet
 from recourse.defaults import *
 from recourse.defaults import _SOLVER_TYPE_CPX, _SOLVER_TYPE_PYTHON_MIP
 from recourse.helper_functions import parse_classifier_args
-from recourse.action_set import ActionSet
-import numpy as np
 
 # todo the next imports to defaults so that we remove solver from SUPPORTED_SOLVERS if they don't exist
 try:
     from recourse.cplex_helper import (
+        DEFAULT_CPLEX_PARAMETERS,
         Cplex,
         SparsePair,
-        set_cpx_parameters,
         set_cpx_display_options,
-        set_cpx_time_limit,
         set_cpx_node_limit,
+        set_cpx_parameters,
+        set_cpx_time_limit,
         toggle_cpx_preprocessing,
-        DEFAULT_CPLEX_PARAMETERS,
     )
 except ImportError:
     pass
@@ -35,7 +37,7 @@ EnumerationType: TypeAlias = Literal["mutually_exclusive", "distinct_subsets"]
 
 
 # todo fix bug when all points are non-zero but non-action (demo_credit_script shouldn't run)
-class RecourseBuilder(object):
+class RecourseBuilder:
     _default_check_flag = True
     _default_print_flag = True
     _default_node_limit = float("inf")
@@ -713,7 +715,7 @@ class _RecourseBuilderCPX(RecourseBuilder):
         )
 
         for c in self.action_set.constraints:
-            """
+            r"""
             the constraint has the form:
 
             c.lb - k <= -\sum_ {j \ in indices} u[j][k_null] <= c.ub - k

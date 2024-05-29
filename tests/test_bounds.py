@@ -1,4 +1,5 @@
 import numpy as np
+
 from recourse.action_set import _BoundElement as BoundElement
 
 v = np.random.rand(1000)

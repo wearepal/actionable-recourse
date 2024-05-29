@@ -1,18 +1,20 @@
 from typing import ClassVar, Literal, TypedDict
 from typing_extensions import Unpack
+
 import numpy as np
 from numpy import typing as npt
 import pandas as pd
-from recourse.helper_functions import parse_classifier_args, ClassifierKwargs
+
 from recourse.action_set import ActionSet
 from recourse.builder import EnumerationType, RecourseBuilder
 from recourse.defaults import (
-    VALID_MIP_COST_TYPES,
-    VALID_ENUMERATION_TYPES,
     DEFAULT_SOLVER,
+    VALID_ENUMERATION_TYPES,
+    VALID_MIP_COST_TYPES,
     CostType,
     SolverType,
 )
+from recourse.helper_functions import ClassifierKwargs, parse_classifier_args
 
 pd.set_option("display.max_columns", 10)
 __all__ = ["Flipset"]
